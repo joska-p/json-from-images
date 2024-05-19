@@ -3,12 +3,12 @@
  */
 
 // Remove all non-alphanumeric characters from a string
-const sanitize = (fileName: string) => fileName.trim().replace(/[^\w.-]/g, "")
+const sanitize = fileName => fileName.trim().replace(/[^\w.-]/g, "")
 
 /**
  * Safely parse an integer from a string
  */
-const parseIntSafe = (input: string) => {
+const parseIntSafe = input => {
   const int = parseInt(input, 10)
 
   return Number.isNaN(int) ? 0 : int
@@ -18,20 +18,13 @@ const parseIntSafe = (input: string) => {
  * Functions
  */
 
-interface ExtractedData {
-  name: string
-  height: number
-  width: number
-  year: number
-}
-
 /**
  * Extract data from a filename
  */
-const extractData = (filename: string): ExtractedData => {
+const extractData = filename => {
   console.log(filename)
   const pattern = /^([a-z0-9-]+)_(\d+)x(\d+)_(\d{4})\.([a-z0-9-]+)$/i
-  const [, name, width, height, year, extension] = filename.match(pattern)!
+  const [_, name, width, height, year, extension] = filename.match(pattern)
 
   return {
     name: sanitize(name),
@@ -45,19 +38,38 @@ const extractData = (filename: string): ExtractedData => {
  * Tests
  */
 
-interface FilenameParts {
-  full: string
-  name: string
-  width: number
-  height: number
-  year: number
-  extension: string
+/**
+ * Generate a random string
+ */
+const generateRandomString = randomStringLength => {
+  let result = ""
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789-"
+
+  for (let i = 0; i < randomStringLength; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length))
+  }
+
+  return result
 }
+
+/**
+ * Generate random dimensions
+ */
+const generateRandomDimensions = () => ({
+  width: generateRandomInteger(100, 1000),
+  height: generateRandomInteger(100, 1000),
+})
+
+/**
+ * Generate a random integer
+ */
+const generateRandomInteger = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1)) + min
 
 /**
  * Generate a random filename
  */
-const generateRandomFilename = (): FilenameParts => {
+const generateRandomFilename = () => {
   const name = generateRandomString(5)
   const { width, height } = generateRandomDimensions()
   const year = generateRandomInteger(2000, 2023)
@@ -74,43 +86,15 @@ const generateRandomFilename = (): FilenameParts => {
 }
 
 /**
- * Generate a random string
- */
-const generateRandomString = (randomStringLength: number) => {
-  let result = ""
-  const characters = "abcdefghijklmnopqrstuvwxyz0123456789-"
-
-  for (let i = 0; i < randomStringLength; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length))
-  }
-
-  return result
-}
-
-/**
- * Generate random dimensions
- */
-const generateRandomDimensions = (): { width: number; height: number } => ({
-  width: generateRandomInteger(100, 1000),
-  height: generateRandomInteger(100, 1000),
-})
-
-/**
- * Generate a random integer
- */
-const generateRandomInteger = (min: number, max: number) =>
-  Math.floor(Math.random() * (max - min + 1)) + min
-
-/**
  * Generate test data
  */
-const generateTestData = (count: number): FilenameParts[] =>
+const generateTestData = count =>
   Array.from({ length: count }).map(() => generateRandomFilename())
 
 /**
  * Test extractData
  */
-const testExportData = (numberOfTests: number) => {
+const testExportData = numberOfTests => {
   const data = generateTestData(numberOfTests)
 
   data.forEach(({ full, name, width, height, year }) => {
@@ -129,6 +113,4 @@ const testExportData = (numberOfTests: number) => {
   return "Valid data"
 }
 
-console.log(testExportData(600))
-
-export {}
+console.log(testExportData(5))
